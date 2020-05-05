@@ -3,10 +3,10 @@
 #include <amxmodx>
 #include <amxmisc>
 
-new const VERSION[] = "0.0.1";
+new const VERSION[] = "0.0.5";
 new const CONFIG_NAME[] = "MusicConnection.ini";
 
-#define IsMp3Format(%1)             equali(%1[strlen( %1 ) - 4 ], ".mp3")
+#define IsMp3Format(%1)             bool:(equali(%1[strlen(%1) - 4], ".mp3"))
 #define CONTAIN_WAV_FILE(%1)        (containi(%1, ".wav") != -1)
 #define CONTAIN_MP3_FILE(%1)        (containi(%1, ".mp3") != -1)
 
@@ -18,7 +18,7 @@ enum (+=1) {
 
 new Array:g_MusicConnection;
 new Trie:g_Setting;
-new g_MusicConnectionNum, g_Section, g_szSound[64]; 
+new g_MusicConnectionNum, g_Section, g_szSound[MAX_RESOURCE_PATH_LENGTH]; 
 
 public plugin_precache() {
     register_plugin("Music Connection", VERSION, "Jumper");
@@ -44,7 +44,11 @@ public plugin_precache() {
 }
 
 public client_connect(id) {
-    ArrayGetString(g_MusicConnection, random(g_MusicConnectionNum), g_szSound, charsmax(g_szSound));
+    if(is_user_bot(id) || is_user_hltv(id)) {
+        return PLUGIN_HANDLED;
+    }
+
+	ArrayGetString(g_MusicConnection, random(g_MusicConnectionNum), g_szSound, charsmax(g_szSound));
 
     if(IsMp3Format(g_szSound)) {
         client_cmd(id, "stopsound; mp3 play %s", g_szSound);
@@ -70,7 +74,7 @@ public StopSound(id) {
         return PLUGIN_HANDLED;
     }
 
-    client_cmd(id, "stopsound", g_szSound);
+    client_cmd(id, "stopsound");
 
     return PLUGIN_CONTINUE;
 }
@@ -108,11 +112,10 @@ public bool:ReadCFGNewSection(INIParser:handle, const section[], bool:invalid_to
 }
 
 public bool:ReadCFGKeyValue(INIParser:handle, const key[], const value[]) {
-    if(g_Section == SectionNone) {
-        return false;
-    }
-
     switch(g_Section) {
+        case SectionNone: {
+             return false;
+        }
         case Setting: {
              if(!key[0] || !value[0]) {
                  log_amx("Emty key or value!");
@@ -134,5 +137,6 @@ public bool:ReadCFGKeyValue(INIParser:handle, const key[], const value[]) {
              ArrayPushString(g_MusicConnection, szSound);
         }
     }
+
     return true;
 }
