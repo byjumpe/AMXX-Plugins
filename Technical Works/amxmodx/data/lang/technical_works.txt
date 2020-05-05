@@ -1,0 +1,5 @@
+[ru]
+REASON_WORKS = Ведутся технические работы! До 18:00 по МСК.
+
+[en]
+REASON_WORKS = Technical work is underway! Until 12:00 PM.

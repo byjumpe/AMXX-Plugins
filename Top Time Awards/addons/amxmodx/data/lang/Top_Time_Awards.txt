@@ -1,0 +1,14 @@
+[ru]
+TTA_AWARD_ONLINE = ^3За свой частый и стабильный онлайн вы получаете ^4VIP!
+TTA_YOU_VIP = ^1Вы уже являетесь VIP игроком!
+TTA_NEED_TIME = ^1До ^4VIP^1: %s
+
+[en]
+TTA_AWARD_ONLINE = ^3You have received ^4VIP privileges ^3for your online!
+TTA_YOU_VIP = ^1You already have VIP privileges!
+TTA_NEED_TIME = ^1To ^4VIP^1: %s
+
+[es]
+TTA_AWARD_ONLINE = ^3Por su online ha recibido ^4VIP^3!
+TTA_YOU_VIP = ^1Ya tiene privilegios VIP!
+TTA_NEED_TIME = ^1Hasta ^4VIP^1: %s

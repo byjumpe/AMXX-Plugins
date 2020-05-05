@@ -1,0 +1,37 @@
+[en]
+AK_DOUBLE_KILL = %s has a DOUBLE KILL!
+AK_TRIPLE_KILL = %s has a TRIPLE KILL!
+AK_QUADRA_KILL = %s has a QUADRA KILL!
+AK_PENTA_KILL = %s has a PENTA KILL!!!
+AK_KILLING_SPREE = %s is on a KILLING SPREE!(x3)
+AK_RAMPAGE = %s is on a RAMPAGE!(x5)
+AK_UNSTOPPABLE = %s is UNSTOPPABLE!(x7)
+AK_DIVINE = %s is DIVINE!(x9)
+AK_IMMORTAL = %s is IMMORTAL!(x11)
+AK_GODLIKE = %s is GODLIKE!!!(x13+)
+AK_SHUTDOWN = %s is SHUTDOWN!
+AK_DEICIDE = DEICIDE!
+AK_FIRST_BLOOD = %s has a FIRST BLOOD!
+AK_COMMAND = ^1Killstreak announcer mode set to
+AK_STATUS_1 = "^4all^1"
+AK_STATUS_2 = "^4only personal^1"
+AK_STATUS_3 = "^3off^1"
+
+[ru]
+AK_DOUBLE_KILL = %s ДВОИХ РАЗОМ, НЕПЛОХО!
+AK_TRIPLE_KILL = %s ТРОЙНОЕ УБИЙСТВО!
+AK_QUADRA_KILL = %s ЧЕТЫРЁХКРАТНОЕ УБИЙСТВО!
+AK_PENTA_KILL = %s ПЯТИКРАТНОЕ УБИЙСТВО!!!
+AK_KILLING_SPREE = %s СЕРИЯ УБИЙСТВ!
+AK_RAMPAGE = %s МОРЕ КРОВИ!
+AK_UNSTOPPABLE = %s НЕУДЕРЖИМ!
+AK_DIVINE = %s БОЖЕСТВЕННЫЙ!
+AK_IMMORTAL = %s БЕССМЕРТНЫЙ!
+AK_GODLIKE = %s БОГОПОДОБНЫЙ! ОСТАНОВИТЕ ЕГО!
+AK_SHUTDOWN = СЕРИЯ %s ПРЕРВАНА!
+AK_DEICIDE = ВСЯ КОМАНДА ВРАГА МЕРТВА!
+AK_FIRST_BLOOD = %s ПРОЛИВАЕТ ПЕРВУЮ КРОВЬ!
+AK_COMMAND = ^1Режим диктора серий убийств установлен в 
+AK_STATUS_1 = "^4все^1"
+AK_STATUS_2 = "^4только свои^1"
+AK_STATUS_3 = "^3выкл.^1"
