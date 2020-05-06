@@ -17,7 +17,7 @@ new const g_szModels[MODEL_NUM][] = {
 };
 
 public plugin_init() {
-    register_plugin("[ReAPI] Gold Knife", "0.0.1", "Jumper");
+    register_plugin("[ReAPI] Golden Knife", "0.0.1", "Jumper");
     RegisterHam(Ham_Item_Deploy, "weapon_knife", "Ham_Item_Deploy_Post", true);
 }
 

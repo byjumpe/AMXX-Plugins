@@ -12,7 +12,7 @@ const Float:TIME_UPDATE = 1.0;
 
 enum {
     HUD_DISABLED,
-	HUD_ENABLED
+    HUD_ENABLED
 };
 
 new g_iSyncMsg, g_iAdminNum, g_iShowAdminHud[MAX_PLAYERS +1];
