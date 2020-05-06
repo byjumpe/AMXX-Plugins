@@ -3,11 +3,11 @@
 #include <amxmodx>
 #include <amxmisc>
 
-new const VERSION[] = "0.0.6";
+new const VERSION[] = "0.0.10";
 new const CONFIG_NAME[] = "MusicConnection.ini";
 
-#define IsMp3Format(%1)             bool:(equali(%1[strlen(%1) - 4], ".mp3"))
-#define CONTAIN_WAV_FILE(%1)        (containi(%1, ".wav") != -1)
+#define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
+#define IsWavFormat(%1)    bool:(equali(%1[strlen(%1) - 4], ".wav"))
 
 enum (+=1) {
     SectionNone = -1,
@@ -17,7 +17,7 @@ enum (+=1) {
 
 new Array:g_MusicConnection;
 new Trie:g_Setting;
-new g_MusicConnectionNum, g_Section, g_szSound[MAX_RESOURCE_PATH_LENGTH]; 
+new g_MusicConnectionNum, g_Section, g_Sound[MAX_RESOURCE_PATH_LENGTH]; 
 
 public plugin_precache() {
     register_plugin("Music Connection", VERSION, "Jumper");
@@ -47,12 +47,12 @@ public client_connect(id) {
         return PLUGIN_HANDLED;
     }
 
-    ArrayGetString(g_MusicConnection, random(g_MusicConnectionNum), g_szSound, charsmax(g_szSound));
+    ArrayGetString(g_MusicConnection, random(g_MusicConnectionNum), g_Sound, charsmax(g_Sound));
 
-    if(IsMp3Format(g_szSound)) {
-        client_cmd(id, "stopsound; mp3 play %s", g_szSound);
+    if(IsMp3Format(g_Sound)) {
+        client_cmd(id, "stopsound; mp3 play %s", g_Sound);
     } else {
-        client_cmd(id, "stopsound; spk %s", g_szSound);
+        client_cmd(id, "stopsound; spk %s", g_Sound);
     }
 }
 
@@ -124,16 +124,16 @@ public bool:ReadCFGKeyValue(INIParser:handle, const key[], const value[]) {
              TrieSetCell(g_Setting, key, fvalue);
         }
         case MusicConnection: {
-             if((key[0] && !CONTAIN_WAV_FILE(key)) && (key[0] && !IsMp3Format(key))) {
+             if((key[0] && !IsWavFormat(key)) && (key[0] && !IsMp3Format(key))) {
                  log_amx("Invalid sound file! Parse string '%s'. Only sound files in wav or mp3 format should be used!", key);
                  return false;
              }
-             new szSound[64];
-             format(szSound, charsmax(szSound), "sound/%s", key);
-             if(file_exists(fmt("%s", szSound))) {
+             new Sound[MAX_RESOURCE_PATH_LENGTH];
+             format(Sound, charsmax(Sound), "sound/%s", key);
+             if(file_exists(fmt("%s", Sound))) {
                  precache_sound(key);
              }
-             ArrayPushString(g_MusicConnection, szSound);
+             ArrayPushString(g_MusicConnection, Sound);
         }
     }
 
