@@ -54,6 +54,8 @@ public client_connect(id) {
     } else {
         client_cmd(id, "stopsound; spk %s", g_Sound);
     }
+
+    return PLUGIN_CONTINUE;
 }
 
 public client_putinserver(id) {
