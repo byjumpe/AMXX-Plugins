@@ -3,7 +3,7 @@
 #include <amxmodx>
 #include <amxmisc>
 
-new const VERSION[] = "0.0.10";
+new const VERSION[] = "0.0.12";
 new const CONFIG_NAME[] = "MusicConnection.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -44,7 +44,7 @@ public plugin_precache() {
 
 public client_connect(id) {
     if(is_user_bot(id) || is_user_hltv(id)) {
-        return PLUGIN_HANDLED;
+        return;
     }
 
     ArrayGetString(g_MusicConnection, random(g_MusicConnectionNum), g_Sound, charsmax(g_Sound));
@@ -54,30 +54,24 @@ public client_connect(id) {
     } else {
         client_cmd(id, "stopsound; spk %s", g_Sound);
     }
-
-    return PLUGIN_CONTINUE;
 }
 
 public client_putinserver(id) {
     if(is_user_bot(id) || is_user_hltv(id)) {
-        return PLUGIN_HANDLED;
+        return;
     }
 
     new Float:fTime;
     TrieGetCell(g_Setting, "time_stop_sound", fTime);
     set_task_ex(fTime, "StopSound", id);
-
-    return PLUGIN_CONTINUE;
 }
 
 public StopSound(id) {
     if(!is_user_connected(id)) {
-        return PLUGIN_HANDLED;
+        return;
     }
 
     client_cmd(id, "stopsound");
-
-    return PLUGIN_CONTINUE;
 }
 
 bool:parseConfigINI(const configFile[]) {

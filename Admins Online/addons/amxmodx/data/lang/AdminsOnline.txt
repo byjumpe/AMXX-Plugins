@@ -1,0 +1,11 @@
+[ru]
+ADM_HUD_ON = ^1Вы ^4включили ^1HUD Админов онлайн
+ADM_HUD_OFF = ^1Вы ^3отключили ^1HUD Админов онлайн
+ADM_HUD_ONLINE = Админов онлайн: %d
+ADM_HUD_OFFLINE = Админов онлайн: НЕТ
+
+[en]
+ADM_HUD_ON = ^1You have ^4enabled ^1HUD Admins online
+ADM_HUD_OFF = ^1You ^3disabled ^1HUD Admins online
+ADM_HUD_ONLINE = Admins online: %d
+ADM_HUD_OFFLINE = Admins offline
