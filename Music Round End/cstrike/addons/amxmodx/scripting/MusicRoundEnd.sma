@@ -162,9 +162,9 @@ PlayMusic(const sound[]) {
         id = players[i];
         if(g_iPlayMusic[id] == MUSIC_ENABLED){
             if(IsMp3Format(sound)) {
-                client_cmd(0, "stopsound; mp3 play %s", sound);
+                client_cmd(id, "stopsound; mp3 play %s", sound);
             } else {
-                rg_send_audio(0, sound);
+                rg_send_audio(id, sound);
             }
         }
     }

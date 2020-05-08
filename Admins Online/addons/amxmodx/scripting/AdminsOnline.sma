@@ -55,11 +55,11 @@ public AdminHudToggle(id) {
     if(g_iShowAdminHud[id] == HUD_ENABLED) {
         g_iShowAdminHud[id] = HUD_DISABLED;
         ClearSyncHud(id, g_iSyncAdminHud);
-        client_print_color(0, print_team_red, "%L", LANG_PLAYER, "ADM_HUD_OFF");
+        client_print_color(id, print_team_red, "%L", LANG_PLAYER, "ADM_HUD_OFF");
     } else {
         g_iShowAdminHud[id] = HUD_ENABLED;
         ShowAdminHud(id);
-        client_print_color(0, print_team_default, "%L", LANG_PLAYER, "ADM_HUD_ON");
+        client_print_color(id, print_team_default, "%L", LANG_PLAYER, "ADM_HUD_ON");
     }
 }
 
