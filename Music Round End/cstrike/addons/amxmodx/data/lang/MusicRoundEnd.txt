@@ -1,0 +1,7 @@
+[ru]
+ROUND_END_MUSIC_ON = ^1Вы ^4включили ^1музыку в конце раунда
+ROUND_END_MUSIC_OFF = ^1Вы ^3отключили ^1музыку в конце раунда
+
+[en]
+ROUND_END_MUSIC_ON = ^1You have ^4enabled ^1the music at the end of the round
+ROUND_END_MUSIC_OFF = ^1You ^3disabled ^1the music at the end of the round
