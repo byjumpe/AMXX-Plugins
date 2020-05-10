@@ -3,7 +3,7 @@
 #include <amxmodx>
 #include <amxmisc>
 
-new const VERSION[] = "0.0.12";
+new const VERSION[] = "1.0.0";
 new const CONFIG_NAME[] = "MusicConnection.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -127,7 +127,11 @@ public bool:ReadCFGKeyValue(INIParser:handle, const key[], const value[]) {
              new Sound[MAX_RESOURCE_PATH_LENGTH];
              format(Sound, charsmax(Sound), "sound/%s", key);
              if(file_exists(fmt("%s", Sound))) {
-                 precache_sound(key);
+                 if(IsMp3Format(key)) {
+                     precache_generic(Sound);
+                 } else {
+                     precache_sound(key);
+                 }
              }
              ArrayPushString(g_MusicConnection, Sound);
         }
