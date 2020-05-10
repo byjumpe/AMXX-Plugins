@@ -4,7 +4,7 @@
 #include <amxmisc>
 #include <reapi>
 
-new const VERSION[] = "1.0.0";
+new const VERSION[] = "1.0.1";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -149,8 +149,12 @@ bool:PrecacheSoundEx(Array:arr, const keys[]) {
         log_amx("File missing '%s'.", Sound);
         return false;
     }
-    
-    precache_sound(keys);
+    if(IsMp3Format(keys)) {
+        precache_generic(Sound);
+    } else {
+        precache_sound(keys);
+    }
+
     return true;
 }
 
