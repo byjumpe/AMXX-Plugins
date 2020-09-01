@@ -3,8 +3,19 @@
 #include <amxmodx>
 #include <amxmisc>
 #include <reapi>
+#include <time>
+#include <nvault>
 
-new const VERSION[] = "1.0.1";
+//////////////////////// Настройки ////////////////////////
+// Через сколько дней удалять настройку из nVault,
+// если игрок не заходил
+stock const VAULT_PRUNE_DAYS = 7;
+
+// Файл для сохранения настроек
+stock const VAULT_FILE[] = "music_data";
+///////////////////////////////////////////////////////////
+
+new const VERSION[] = "1.2.0";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -18,12 +29,14 @@ enum {
 enum (+=1) {
     SectionNone = -1,
     CTSWins,
-    TerroristsWins
+    TerroristsWins,
+    Draw
 };
 
-new Array:g_MusicForCT, Array:g_MusicForTerrorist;
-new g_MusicForCTNum, g_MusicForTerroristNum, g_Section, 
-    g_Sound[MAX_RESOURCE_PATH_LENGTH], g_iPlayMusic[MAX_PLAYERS +1]; 
+new Array:g_MusicForCT, Array:g_MusicForTerrorist, Array:g_MusicForDraw;
+new g_MusicForCTNum, g_MusicForTerroristNum, g_MusicForDrawNum, g_Section, 
+    g_Sound[MAX_RESOURCE_PATH_LENGTH], g_iPlayMusic[MAX_PLAYERS +1];
+new g_hVault = INVALID_HANDLE;
 
 public plugin_init() {
     register_plugin("Music Round End", VERSION, "Jumper");
@@ -36,9 +49,29 @@ public plugin_init() {
     }
 }
 
+public plugin_end() {
+    if(g_hVault != INVALID_HANDLE) {
+        nvault_close(g_hVault);
+    }
+}
+
+public plugin_cfg() {
+    if((g_hVault = nvault_open(VAULT_FILE)) == INVALID_HANDLE) {
+        set_fail_state("ERROR: Opening nVault %s failed!", VAULT_FILE);
+    }
+    nvault_prune(g_hVault, 0, get_systime() - (SECONDS_IN_DAY * VAULT_PRUNE_DAYS));
+}
+
+public client_authorized(id, const authid[]){
+    if(!(g_iPlayMusic[id] = nvault_get(g_hVault, authid))){
+        g_iPlayMusic[id] = MUSIC_ENABLED;
+    }
+}
+
 public plugin_precache() {
     g_MusicForCT = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
     g_MusicForTerrorist = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
+    g_MusicForDraw = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
 
     new filedir[MAX_RESOURCE_PATH_LENGTH];
     get_localinfo("amxx_configsdir", filedir, charsmax(filedir));
@@ -59,10 +92,10 @@ public plugin_precache() {
     if(g_MusicForTerrorist) {
         g_MusicForTerroristNum = ArraySize(g_MusicForTerrorist);
     }
-}
 
-public client_putinserver(id) {
-    g_iPlayMusic[id] = MUSIC_ENABLED;
+    if(g_MusicForDraw) {
+        g_MusicForDrawNum = ArraySize(g_MusicForDraw);
+    }
 }
 
 public RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event){
@@ -75,6 +108,10 @@ public RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event){
             ArrayGetString(g_MusicForTerrorist, random(g_MusicForTerroristNum), g_Sound, charsmax(g_Sound));
             PlayMusic(g_Sound);
         }
+        case WINSTATUS_DRAW: {
+            ArrayGetString(g_MusicForDraw, random(g_MusicForDrawNum), g_Sound, charsmax(g_Sound));
+            PlayMusic(g_Sound);
+        }
     }
 }
 
@@ -82,11 +119,19 @@ public PlayMusicToggle(id) {
     if(g_iPlayMusic[id] == MUSIC_ENABLED) {
         g_iPlayMusic[id] = MUSIC_DISABLED;
         client_cmd(id, "stopsound");
-        client_print_color(id, print_team_red, "%L", LANG_PLAYER, "ROUND_END_MUSIC_OFF");
     } else {
         g_iPlayMusic[id] = MUSIC_ENABLED;
-        client_print_color(id, print_team_default, "%L", LANG_PLAYER, "ROUND_END_MUSIC_ON");
     }
+    
+    new authid[MAX_AUTHID_LENGTH], buffer[MAX_NAME_LENGTH];
+    get_user_authid(id, authid, charsmax(authid));
+    formatex(buffer, charsmax(buffer), "%d", g_iPlayMusic[id]);
+    nvault_set(g_hVault, authid, buffer);
+    
+    formatex(buffer, charsmax(buffer), "ROUND_END_MUSIC_STATUS_%d", g_iPlayMusic[id]);
+    client_print_color(id, print_team_red, "%L %L", LANG_PLAYER, "ROUND_END_MUSIC_TOGGLE", LANG_PLAYER, buffer);
+    
+    return PLUGIN_HANDLED_MAIN;
 }
 
 bool:parseConfigINI(const configFile[]) {
@@ -118,6 +163,11 @@ public bool:ReadCFGNewSection(INIParser:handle, const section[], bool:invalid_to
         return true;
     }
 
+    if(equal(section, "draw")) {
+        g_Section = Draw;
+        return true;
+    }
+
     return false;
 }
 
@@ -131,6 +181,9 @@ public bool:ReadCFGKeyValue(INIParser:handle, const key[], const value[]) {
         }
         case TerroristsWins: {
              PrecacheSoundEx(g_MusicForTerrorist, key);
+        }
+        case Draw: {
+             PrecacheSoundEx(g_MusicForDraw, key);
         }
     }
 

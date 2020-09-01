@@ -1,7 +1,9 @@
 [ru]
-ROUND_END_MUSIC_ON = ^1Вы ^4включили ^1музыку в конце раунда
-ROUND_END_MUSIC_OFF = ^1Вы ^3отключили ^1музыку в конце раунда
+ROUND_END_MUSIC_TOGGLE = ^4* ^1Музыка в конце раунда:
+ROUND_END_MUSIC_STATUS_0 = ^3отключена
+ROUND_END_MUSIC_STATUS_1 = ^4включена
 
 [en]
-ROUND_END_MUSIC_ON = ^1You have ^4enabled ^1the music at the end of the round
-ROUND_END_MUSIC_OFF = ^1You ^3disabled ^1the music at the end of the round
+ROUND_END_MUSIC_TOGGLE = ^4* ^1Music at the end of the round is:
+ROUND_END_MUSIC_STATUS_0 = ^3off
+ROUND_END_MUSIC_STATUS_1 = ^4on
