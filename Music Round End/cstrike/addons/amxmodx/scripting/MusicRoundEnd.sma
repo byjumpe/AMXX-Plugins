@@ -15,14 +15,14 @@ stock const VAULT_PRUNE_DAYS = 7;
 stock const VAULT_FILE[] = "music_data";
 ///////////////////////////////////////////////////////////
 
-new const VERSION[] = "1.2.0";
+new const VERSION[] = "1.2.1";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
 #define IsWavFormat(%1)    bool:(equali(%1[strlen(%1) - 4], ".wav"))
 
 enum {
-    MUSIC_DISABLED,
+    MUSIC_DISABLED = 1,
     MUSIC_ENABLED
 };
 

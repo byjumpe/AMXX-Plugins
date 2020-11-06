@@ -1,2 +1,6 @@
 
 *.zip
+Party System/cstrike/addons/amxmodx/scripting/include/ps_api.inc
+Party System/cstrike/addons/amxmodx/scripting/include/ps_api_version.inc
+Party System/cstrike/addons/amxmodx/scripting/PS_Core.sma
+Party System/cstrike/sound/Sparta/this_is_sparta.wav

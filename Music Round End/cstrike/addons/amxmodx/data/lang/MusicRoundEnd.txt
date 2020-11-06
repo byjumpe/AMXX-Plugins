@@ -1,9 +1,9 @@
 [ru]
 ROUND_END_MUSIC_TOGGLE = ^4* ^1Музыка в конце раунда:
-ROUND_END_MUSIC_STATUS_0 = ^3отключена
-ROUND_END_MUSIC_STATUS_1 = ^4включена
+ROUND_END_MUSIC_STATUS_1 = ^3отключена
+ROUND_END_MUSIC_STATUS_2 = ^4включена
 
 [en]
 ROUND_END_MUSIC_TOGGLE = ^4* ^1Music at the end of the round is:
-ROUND_END_MUSIC_STATUS_0 = ^3off
-ROUND_END_MUSIC_STATUS_1 = ^4on
+ROUND_END_MUSIC_STATUS_1 = ^3off
+ROUND_END_MUSIC_STATUS_2 = ^4on
