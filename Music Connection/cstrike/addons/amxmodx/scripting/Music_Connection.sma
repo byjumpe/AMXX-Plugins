@@ -3,7 +3,7 @@
 #include <amxmodx>
 #include <amxmisc>
 
-new const VERSION[] = "1.0.0";
+new const VERSION[] = "1.0.1";
 new const CONFIG_NAME[] = "MusicConnection.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -71,7 +71,7 @@ public StopSound(id) {
         return;
     }
 
-    client_cmd(id, "stopsound");
+    client_cmd(id, "stopsound; mp3 stop");
 }
 
 bool:parseConfigINI(const configFile[]) {

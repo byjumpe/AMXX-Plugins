@@ -15,7 +15,7 @@ stock const VAULT_PRUNE_DAYS = 7;
 stock const VAULT_FILE[] = "music_data";
 ///////////////////////////////////////////////////////////
 
-new const VERSION[] = "1.2.1";
+new const VERSION[] = "1.2.2";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -102,7 +102,7 @@ public RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event){
     switch(status) {
         case WINSTATUS_CTS: {
             ArrayGetString(g_MusicForCT, random(g_MusicForCTNum), g_Sound, charsmax(g_Sound));
-            PlayMusic(g_Sound);
+            PlayMusic(g_Sound);  
         }
         case WINSTATUS_TERRORISTS: {
             ArrayGetString(g_MusicForTerrorist, random(g_MusicForTerroristNum), g_Sound, charsmax(g_Sound));
@@ -110,7 +110,7 @@ public RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event){
         }
         case WINSTATUS_DRAW: {
             ArrayGetString(g_MusicForDraw, random(g_MusicForDrawNum), g_Sound, charsmax(g_Sound));
-            PlayMusic(g_Sound);
+            PlayMusic(g_Sound); 
         }
     }
 }
@@ -118,7 +118,7 @@ public RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event){
 public PlayMusicToggle(id) {
     if(g_iPlayMusic[id] == MUSIC_ENABLED) {
         g_iPlayMusic[id] = MUSIC_DISABLED;
-        client_cmd(id, "stopsound");
+        client_cmd(id, "stopsound; mp3 stop");
     } else {
         g_iPlayMusic[id] = MUSIC_ENABLED;
     }
