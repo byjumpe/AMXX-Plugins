@@ -3,7 +3,7 @@
 #include <amxmodx>
 #include <reapi>
 
-new const VERSION[] = "1.0.0";
+new const VERSION[] = "1.1.0";
 new const CONFIG_NAME[] = "InfoKiller.cfg";
 
 enum any:CVAR_LIST {
@@ -16,83 +16,7 @@ enum any:CVAR_LIST {
     Float:HUD_HOLD_TIME
 };
 
-enum WeaponId {
-    NONE,
-    P228,
-    GLOCK,
-    SCOUT,
-    HEGRENADE,
-    XM1014,
-    C4,
-    MAC10,
-    AUG,
-    ELITE = 10,
-    FIVESEVEN,
-    UMP45,
-    SG550,
-    GALIL,
-    FAMAS,
-    USP,
-    GLOCK18,
-    AWP,
-    MP5,
-    M249,
-    M3,
-    M4A1,
-    TMP,
-    G3SG1,
-    DEAGLE = 26,
-    SG552,
-    AK47,
-    KNIFE,
-    P90
-};
-
-new const g_szLangMsg[WeaponId][] = {
-    "INFO_KILLER_NONE",
-    "INFO_KILLER_P228",
-    "INFO_KILLER_GLOCK",
-    "INFO_KILLER_SCOUT",
-    "INFO_KILLER_HEGRENADE",
-    "INFO_KILLER_XM1014",
-    "INFO_KILLER_C4",
-    "INFO_KILLER_MAC10",
-    "INFO_KILLER_AUG",
-	"",
-    "INFO_KILLER_ELITE",
-    "INFO_KILLER_FIVESEVEN",
-    "INFO_KILLER_UMP45",
-    "INFO_KILLER_SG550",
-    "INFO_KILLER_GALIL",
-    "INFO_KILLER_FAMAS",
-    "INFO_KILLER_USP",
-    "INFO_KILLER_GLOCK18",
-    "INFO_KILLER_AWP",
-    "INFO_KILLER_MP5",
-    "INFO_KILLER_M249",
-    "INFO_KILLER_M3",
-    "INFO_KILLER_M4A1",
-    "INFO_KILLER_TMP",
-    "INFO_KILLER_G3SG1",
-	"",
-    "INFO_KILLER_DEAGLE",
-    "INFO_KILLER_SG552",
-    "INFO_KILLER_AK47",
-    "INFO_KILLER_KNIFE",
-    "INFO_KILLER_P90"
-};
-
-enum _:DAMAGE {
-    DMG_TAKEN,
-    DMG_GIVEN
-}
-
-enum _:HITS {
-    HITS_TAKEN,
-    HITS_GIVEN
-}
-
-new g_iDamage[MAX_PLAYERS +1][MAX_PLAYERS +1][DAMAGE], g_iHits[MAX_PLAYERS +1][MAX_PLAYERS +1][HITS], g_Cvar[CVAR_LIST];
+new g_iDamage[MAX_PLAYERS +1][MAX_PLAYERS +1], g_iHits[MAX_PLAYERS +1][MAX_PLAYERS +1], g_Cvar[CVAR_LIST];
 
 public plugin_init() {
     register_plugin("[ReAPI] Info Killer", VERSION, "Jumper");
@@ -118,39 +42,46 @@ public plugin_cfg() {
 }
 
 public CBasePlayer_Spawn(id) {
-    arrayset(g_iDamage[id][DAMAGE], 0, sizeof g_iDamage[]);
-    arrayset(g_iHits[id][HITS], 0, sizeof g_iHits[]);
+    for (new i = 1; i <= MaxClients; i++) {
+        g_iDamage[id][i] = 0;
+        g_iHits[id][i] = 0;
+    }
 }
 
 public client_disconnected(id) {
-    arrayset(g_iDamage[id][DAMAGE], 0, sizeof g_iDamage[]);
-    arrayset(g_iHits[id][HITS], 0, sizeof g_iHits[]);
+    for (new i = 1; i <= MaxClients; i++) {
+        g_iDamage[i][id] = 0;
+        g_iHits[i][id] = 0;
+    }
 }
 
 public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDamage) {
-    if(victim == attacker || !is_user_connected(attacker) || !rg_is_player_can_takedamage(victim, attacker) || attacker != pevInflictor) {
+    if(victim == attacker || !is_user_connected(attacker) || !rg_is_player_can_takedamage(victim, attacker)) {
         return HC_CONTINUE;
     }
-    g_iDamage[attacker][victim][DMG_GIVEN] += floatround(flDamage);
-    g_iHits[attacker][victim][HITS_GIVEN]++;
-    g_iDamage[victim][attacker][DMG_TAKEN] += floatround(flDamage);
-    g_iHits[victim][attacker][HITS_TAKEN]++;
+    g_iDamage[attacker][victim] += floatround(flDamage);
+    g_iHits[attacker][victim]++;
 
     if(!is_user_alive(victim)){
-        new ActiveItem = get_member(attacker, m_pActiveItem);
+        new WeaponIdType:wID;
 
-        if(is_nullent(ActiveItem)) {
-            return HC_CONTINUE;
+        if (get_member(victim, m_bKilledByBomb)) {
+            wID = WEAPON_C4;
+        } else if(get_member(victim, m_bKilledByGrenade)) {
+            wID = WEAPON_HEGRENADE;
+        } else {
+            new ActiveItem = get_member(attacker, m_pActiveItem);
+
+            if(!is_nullent(ActiveItem)) {
+                wID = get_member(ActiveItem, m_iId);          
+            }
         }
 
-        new WeaponId:wID = get_member(ActiveItem, m_iId);
-
-        if(get_member(victim, m_bKilledByGrenade)) {
-            wID = HEGRENADE;
-        }
+        new wName[24];
+        rg_get_weapon_info(wID, WI_NAME, wName, charsmax(wName));
 
         if(g_Cvar[ANNOUNCE] == 0) {
-                if(g_iDamage[victim][attacker][DMG_GIVEN] > 0) {
+                if(g_iDamage[victim][attacker] > 0) {
                     client_print_color(
                         victim,
                         attacker,
@@ -159,7 +90,7 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "INFO_KILLER_CHAT1",
                         attacker,
                         Float:get_entvar(attacker, var_health),
-                        fmt("%L", LANG_PLAYER, g_szLangMsg[wID])
+                        wName[7]
                     );            
                     client_print_color(
                         victim,
@@ -167,8 +98,8 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "%L",
                         LANG_PLAYER,
                         "INFO_KILLER_CHAT2",
-                        g_iDamage[attacker][victim][DMG_GIVEN],
-                        g_iHits[attacker][victim][HITS_GIVEN],
+                        g_iDamage[attacker][victim],
+                        g_iHits[attacker][victim],
                         attacker
                     );
                     client_print_color(
@@ -177,8 +108,8 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "%L",
                         LANG_PLAYER,
                         "INFO_KILLER_CHAT3",
-                        g_iDamage[victim][attacker][DMG_GIVEN],
-                        g_iHits[victim][attacker][HITS_GIVEN],
+                        g_iDamage[victim][attacker],
+                        g_iHits[victim][attacker],
                         attacker
                     );
                 } else {
@@ -190,7 +121,7 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "INFO_KILLER_CHAT1", 
                         attacker, 
                         Float:get_entvar(attacker, var_health),
-                        fmt("%L", LANG_PLAYER, g_szLangMsg[wID])
+                        wName[7]
                     );            
                     client_print_color(
                         victim,
@@ -198,8 +129,8 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "%L",
                         LANG_PLAYER,
                         "INFO_KILLER_CHAT2",
-                        g_iDamage[victim][attacker][DMG_TAKEN],
-                        g_iHits[victim][attacker][HITS_TAKEN],
+                        g_iDamage[attacker][victim],
+                        g_iHits[attacker][victim],
                         attacker
                     );
                 }
@@ -213,7 +144,7 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                     .holdtime = g_Cvar[HUD_HOLD_TIME]
                 );
 
-                if(g_iDamage[victim][attacker][DMG_GIVEN] > 0) {
+                if(g_iDamage[victim][attacker] > 0) {
                     show_hudmessage(
                         victim,
                         "%L",
@@ -221,11 +152,11 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "INFO_KILLER_HUD",
                         attacker,
                         Float:get_entvar(attacker, var_health), 
-                        fmt("%L", LANG_PLAYER, g_szLangMsg[wID]),
-                        g_iDamage[attacker][victim][DMG_GIVEN],
-                        g_iHits[attacker][victim][HITS_GIVEN],
-                        g_iDamage[victim][attacker][DMG_GIVEN],
-                        g_iHits[victim][attacker][HITS_GIVEN]
+                        wName[7],
+                        g_iDamage[attacker][victim],
+                        g_iHits[attacker][victim],
+                        g_iDamage[victim][attacker],
+                        g_iHits[victim][attacker]
                     );
                 } else {
                     show_hudmessage(
@@ -235,17 +166,15 @@ public CBasePlayer_TakeDamage(const victim, pevInflictor, attacker, Float:flDama
                         "INFO_KILLER_HUD_NO_DMG",
                         attacker,
                         Float:get_entvar(attacker, var_health),
-                        fmt("%L", LANG_PLAYER, g_szLangMsg[wID]),
-                        g_iDamage[victim][attacker][DMG_TAKEN],
-                        g_iHits[victim][attacker][HITS_TAKEN]
+                        wName[7],
+                        g_iDamage[attacker][victim],
+                        g_iHits[attacker][victim]
                     );
                 }
             }
 
-        g_iDamage[attacker][victim][DMG_GIVEN] = 0;
-        g_iHits[attacker][victim][HITS_GIVEN] = 0;
-        g_iDamage[victim][attacker][DMG_TAKEN] = 0;
-        g_iHits[victim][attacker][HITS_TAKEN] = 0;
+        g_iDamage[attacker][victim] = 0;
+        g_iHits[attacker][victim] = 0;
     }
 
     return HC_CONTINUE;
@@ -310,5 +239,5 @@ RegisterCvars() {
 }
 
 public OnConfigsExecuted() {
-    register_cvar("re_info_attacker", VERSION, FCVAR_SERVER|FCVAR_SPONLY|FCVAR_UNLOGGED);
+    register_cvar("re_info_killer", VERSION, FCVAR_SERVER|FCVAR_SPONLY|FCVAR_UNLOGGED);
 }
