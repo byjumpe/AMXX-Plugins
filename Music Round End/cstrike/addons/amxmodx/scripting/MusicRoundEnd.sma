@@ -15,7 +15,7 @@ stock const VAULT_PRUNE_DAYS = 7;
 stock const VAULT_FILE[] = "music_data";
 ///////////////////////////////////////////////////////////
 
-new const VERSION[] = "1.2.2";
+new const VERSION[] = "1.2.3";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -219,8 +219,9 @@ PlayMusic(const sound[]) {
         id = players[i];
         if(g_iPlayMusic[id] == MUSIC_ENABLED){
             if(IsMp3Format(sound)) {
-                client_cmd(id, "stopsound; mp3 play %s", sound);
+                client_cmd(id, "mp3 stop; mp3 play %s", sound);
             } else {
+                client_cmd(id, "stopsound");
                 rg_send_audio(id, sound);
             }
         }
