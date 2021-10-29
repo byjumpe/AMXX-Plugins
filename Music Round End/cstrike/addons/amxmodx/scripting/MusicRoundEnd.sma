@@ -15,7 +15,7 @@ stock const VAULT_PRUNE_DAYS = 7;
 stock const VAULT_FILE[] = "music_data";
 ///////////////////////////////////////////////////////////
 
-new const VERSION[] = "1.2.3";
+new const VERSION[] = "1.2.4";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)    bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -195,9 +195,13 @@ bool:PrecacheSoundEx(Array:arr, const keys[]) {
         log_amx("Invalid sound file! Parse string '%s'. Only sound files in wav or mp3 format should be used!", keys);
         return false;
     }
-    static Sound[MAX_RESOURCE_PATH_LENGTH];
-    formatex(Sound, charsmax(Sound), "sound/%s", keys);
-    ArrayPushString(arr, Sound);
+	static Sound[MAX_RESOURCE_PATH_LENGTH];
+	formatex(Sound, charsmax(Sound), "sound/%s", keys);
+	if(IsMp3Format(keys)) {
+		ArrayPushString(arr, Sound);
+	} else {
+		ArrayPushString(arr, keys);
+	}
     if(!file_exists(Sound)) {
         log_amx("File missing '%s'.", Sound);
         return false;
@@ -219,9 +223,8 @@ PlayMusic(const sound[]) {
         id = players[i];
         if(g_iPlayMusic[id] == MUSIC_ENABLED){
             if(IsMp3Format(sound)) {
-                client_cmd(id, "mp3 stop; mp3 play %s", sound);
+                client_cmd(id, "mp3 play %s", sound);
             } else {
-                client_cmd(id, "stopsound");
                 rg_send_audio(id, sound);
             }
         }
