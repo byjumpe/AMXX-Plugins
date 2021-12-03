@@ -13,9 +13,16 @@ stock const VAULT_PRUNE_DAYS = 7;
 
 // Файл для сохранения настроек
 stock const VAULT_FILE[] = "music_data";
+
+// Танец в конце раунда
+#define DANCE
 ///////////////////////////////////////////////////////////
 
-new const VERSION[] = "1.2.5";
+#if defined DANCE
+	new const g_szModels[] = "models/MusicRoundEnd/v_music_round_sound.mdl";
+#endif
+
+new const VERSION[] = "1.2.7";
 new const CONFIG_NAME[] = "MusicRoundEnd.ini";
 
 #define IsMp3Format(%1)	bool:(equali(%1[strlen(%1) - 4], ".mp3"))
@@ -72,7 +79,9 @@ public plugin_precache() {
 	g_MusicForCT = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
 	g_MusicForTerrorist = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
 	g_MusicForDraw = ArrayCreate(MAX_RESOURCE_PATH_LENGTH);
-
+#if defined DANCE
+	precache_model(g_szModels);
+#endif
 	new filedir[MAX_RESOURCE_PATH_LENGTH];
 	get_localinfo("amxx_configsdir", filedir, charsmax(filedir));
 	format(filedir, charsmax(filedir), "%s/%s", filedir, CONFIG_NAME);
@@ -237,7 +246,12 @@ PlayMusic(const sound[]) {
 
 	for(new i, id; i < count; i++) {
 		id = players[i];
-		if(g_iPlayMusic[id] == MUSIC_ENABLED){
+		if(g_iPlayMusic[id] == MUSIC_ENABLED) {
+#if defined DANCE
+			if(is_user_alive(id)) {
+				set_entvar(id, var_viewmodel, g_szModels);
+			}
+#endif
 			if(IsMp3Format(sound)) {
 				client_cmd(id, "mp3 play %s", sound);
 			} else {
